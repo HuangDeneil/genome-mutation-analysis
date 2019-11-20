@@ -87,7 +87,7 @@ perl merge_annotation.pl variantion_all.txt $uniprot > cds_merged.txt
 
 ##############################
 # 
-# 3. splited coding or not into two file
+# 3. Splited coding or not into two file
 # 
 echo -e "Splited coding or not into two file (coding_or_not.pl)\n\n"
 perl coding_or_not.pl cds_merged.txt 
@@ -98,7 +98,7 @@ perl coding_or_not.pl cds_merged.txt
 
 ##############################
 # 
-# 4.
+# 4. Non-coding analysis 
 # 
 echo "Doing noncoding_analysis.pl"
 if [ ! -f "mutation_in_non-coding_region.txt" ] ;then 
@@ -110,14 +110,14 @@ perl noncoding_analysis.pl $refernce_gff mutation_in_non-coding_region.txt
 
 ##############################
 # 
-# 5.
+# 5. Re-Organized geneome fasta file
 # 
 perl fasta_reorganized.pl $reference_genome_fasta $ref_genome 
 
 
 ##############################
 # 
-# 6.
+# 6. Modifying into mutated fasta file (DNA & amino acid sequence)
 # 
 echo -e "Doing check_aa_sequence.pl\n\n"
 
@@ -143,7 +143,7 @@ done
 
 ##############################
 # 
-# 7.
+# 7. Comparison of sequece difference
 # 
 if [ -d "Sequence_comparison" ] ;then
 	cd Sequence_comparison

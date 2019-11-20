@@ -26,22 +26,22 @@ use strict;
 my $header;
 my @tmp;
 my $tmp;
-my $chomosome;
+
+## mutation file content
+my ($chomosome,$variation_position,$type,$Ref,$Alt,$cds_locus_tag,$cds_start_end,$translation_or_not);
+
 my %chomosome;
 my %data;
+
 my $tmp_key;
+
 my %position;
-my $position;
-my $cds_start_pos;
-my $cds_end_pos;
-my @pos_tmp;
-my $pos1;
-my $pos2;
-my %cds_way;
-my %cds_mutation_pos;
-my %mutant_edit;
-my $edit_pos;
-my $edit_len;
+my (@pos_tmp, $cds_start_pos, $cds_end_pos);
+
+## mutation modifying related
+my ($pos1, $pos2);
+my (%cds_way, %cds_mutation_pos, %mutant_edit);
+my ($edit_pos, $edit_len);
 
 my @fas_tmp;
 my $fasta;
@@ -49,12 +49,24 @@ my $fragment;
 my %fasta;
 my %cds_fasta;
 
-my $Alt;
-my $Ref;
-my $type;
 my $locus;
 
 my %tanslation;
+
+my ($aa,$aa_s,$codon,$codon_s,%codon,%codon_abb);
+
+my @cds_mut_pos;
+my @mutant_edit;
+my $pos_tmp;
+my $i;
+
+my ($fragment1, $fragment2, $fragment3);
+my $ref_of_alt;
+
+my ($mut_cds_fasta, $cds_fasta, $aa_seq, $mut_aa_seq, $cds_modified_fasta);
+my @seq_tmp;
+
+my $file_name;
 
 ################################
 # 
@@ -66,78 +78,78 @@ $header=<IN>;
 while(<IN>)
 {
 	chomp;
-	@tmp=split "\t",$_;
-	$tmp_key="$tmp[0]\t$tmp[1]";
+	@tmp = split "\t",$_;
 	
-	$data{$tmp_key}=$_;
-	$chomosome=$tmp[0];
-	$type=$tmp[2];
-	$Ref=$tmp[3];
-	$Alt=$tmp[4];
-	$locus="$tmp[5]\t$tmp[6]";
+	$chomosome = $tmp[0];
+	$variation_position = $tmp[1];
+	$type = $tmp[2];
+	$Ref = $tmp[3];
+	$Alt = $tmp[4];
+	$cds_locus_tag = $tmp[5];
+	$cds_start_end = $tmp[6];
+	$translation_or_not = $tmp[7];
+		
+	$tmp_key="$chomosome\t$variation_position";
+	$data{$tmp_key} = $_;
+		
+	$locus="$cds_locus_tag\t$cds_start_end";
 	
+
+
 	######################
 	# 
 	#  Get cds position
 	# 
-	$position=$tmp[6];
-	@pos_tmp=split "-",$position;
+	@pos_tmp=split "-",$cds_start_end;
 	
-	$cds_start_pos=$pos_tmp[0];
-	$cds_end_pos=$pos_tmp[1];
-	$pos1=$cds_start_pos-1;
+	$cds_start_pos = $pos_tmp[0];
+	$cds_end_pos = $pos_tmp[1];
+	$pos1 = $cds_start_pos-1;
 	
-	$tanslation{$locus}=$tmp[7];
+	$tanslation{$locus} = $translation_or_not;
 	
-	$pos2=($pos_tmp[1]-$pos_tmp[0]+1);
+	$pos2 = ($cds_end_pos-$cds_start_pos+1);
 	
 	if ($pos2<0)
 	{
-		$pos2=($pos_tmp[0]-$pos_tmp[1]+1);
+		$pos2 = ($cds_start_pos-$cds_end_pos+1);
 	}
 	
-	$cds_fasta{$locus}="$chomosome-$pos1-$pos2";
-	$cds_mutation_pos{$locus}="$cds_mutation_pos{$locus}---$tmp_key";
-	$position{$tmp_key}=$locus;
+	$cds_fasta{$locus} = "$chomosome-$pos1-$pos2";
+	$cds_mutation_pos{$locus} = "$cds_mutation_pos{$locus}---$tmp_key";
+	$position{$tmp_key} = $locus;
 	
-	$edit_pos=($tmp[1]-$pos1-1);
-	$edit_len=length($Ref);
-	$mutant_edit{$tmp_key}="$tmp[5]\t$edit_pos\t$edit_len\t$Ref\t$Alt\t$type";
+	$edit_pos = ($variation_position-$pos1-1);
+	$edit_len = length($Ref);
+	$mutant_edit{$tmp_key} = "$cds_locus_tag\t$edit_pos\t$edit_len\t$Ref\t$Alt\t$type";
 }
 
 close IN;
+
+
 
 ######################
 # 
 # Codon convertion
 # 
-my $aa;
-my $aa_s;
-my $codon;
-my $codon_s;
-my %codon;
-my %codon_abb;
-
-
-
 open (IN,"$ARGV[1]")||die "$!";
 
 while(<IN>)
 {
 	chomp;
-	@tmp=split "\t",$_;
+	@tmp = split "\t",$_;
 	$codon = $tmp[0];
-	$codon_s= lc $codon;
+	$codon_s = lc $codon;
 	#print "$codon\t$codon_s\n";
 	
 	$aa = $tmp[1];
 	$aa_s = $tmp[2];
 	
-	$codon{$codon}=$aa;
-	$codon{$codon_s}=$aa;
+	$codon{$codon} = $aa;
+	$codon{$codon_s} = $aa;
 	
-	$codon_abb{$codon}=$aa_s;
-	$codon_abb{$codon_s}=$aa_s;
+	$codon_abb{$codon} = $aa_s;
+	$codon_abb{$codon_s} = $aa_s;
 	
 	
 }
@@ -151,25 +163,6 @@ close IN;
 # 
 #  Get cds position
 # 
-
-my @cds_mut_pos;
-my @mutant_edit;
-my $pos_tmp;
-my $i;
-
-my $fragment1;
-my $fragment2;
-my $fragment3;
-my $ref_of_alt;
-
-my $mut_cds_fasta;
-my $cds_fasta;
-my $aa_seq;
-my $mut_aa_seq;
-my $cds_modified_fasta;
-my @seq_tmp;
-
-my $file_name;
 
 system '
 	
@@ -189,9 +182,11 @@ system '
 
 
 open (CDS, ">./Sequence_comparison/mutation_cds.fna")||die "$!";
-open (faa, ">./Sequence_comparison/mutation_cds.faa")||die "$!";
 open (MutCDS, ">./Sequence_comparison/mutation_cds_modified.fna")||die "$!";
+
+open (faa, ">./Sequence_comparison/mutation_cds.faa")||die "$!";
 open (Mutfaa, ">./Sequence_comparison/mutation_cds_modified.faa")||die "$!";
+
 open (Check, ">./Sequence_comparison/amino_acid_primary_check.txt")||die "$!";
 
 
@@ -206,25 +201,25 @@ foreach $locus (sort keys %cds_fasta)
 	#  Extraction cds DNA sequence
 	# 
 	@tmp=split "-",$cds_fasta{$locus};
-	$chomosome=$tmp[0];
-	$pos1=$tmp[1];
-	$pos2=$tmp[2];
+	$chomosome = $tmp[0];
+	$pos1 = $tmp[1];
+	$pos2 = $tmp[2];
 	
 	open (fna, "$ARGV[0]")||die "$!";
 	while (<fna>)
 	{
 		chomp;
-		@fas_tmp=split "\t",$_;
-		if ($fas_tmp[0]=~/$chomosome/)
+		@fas_tmp=split "\t", $_;
+		if ($fas_tmp[0] =~ /$chomosome/)
 		{
-			$fasta=substr $fas_tmp[1], $pos1, $pos2;
+			$fasta = substr $fas_tmp[1], $pos1, $pos2;
 		}
 	}
-	
+
 	$cds_fasta = $fasta;
-	if ( $fasta=~/^ATG/ || $fasta=~/^GTG/ || $fasta=~/^TTG/  || $fasta=~/^ATT/  || $fasta=~/^CTG/  )
+	if ( $fasta =~/^ATG/ || $fasta =~/^GTG/ || $fasta =~/^TTG/  || $fasta =~/^ATT/  || $fasta =~/^CTG/  )
 	{}  
-	elsif ( $fasta=~/^TTA/ || $fasta=~/^CTA/ || $fasta=~/^TCA/ )
+	elsif ( $fasta =~/^TTA/ || $fasta=~/^CTA/ || $fasta =~/^TCA/ )
 	{
 		$cds_fasta = reverse $fasta;
 		$cds_fasta =~ tr/ATGCatgc/TACGtacg/;
@@ -237,7 +232,7 @@ foreach $locus (sort keys %cds_fasta)
 	elsif ( $tanslation{$locus} =~ /yes/ )
 	{
 		
-		$aa_seq=$cds_fasta;
+		$aa_seq = $cds_fasta;
 		$aa_seq =~ s/(...)/"$codon_abb{$1}" || "?"/eg;
 	}
 	print faa ">$locus\n$aa_seq\n";
@@ -253,55 +248,68 @@ foreach $locus (sort keys %cds_fasta)
 	@cds_mut_pos=split "---", $cds_mutation_pos{$locus}; ## [chromosome]\t[position]
 	$fragment = $fasta;
 	$tmp = 0;
-	for ($i=1;$i<@cds_mut_pos;$i++)
+	for ( $i=1 ; $i < @cds_mut_pos ; $i++ )
 	{
-		$tmp_key=$cds_mut_pos[$i];
-		@mutant_edit=split "\t",$mutant_edit{$tmp_key};
-		$pos1=$mutant_edit[1]-$tmp;
-		$pos2=$mutant_edit[2];
-		$Ref=$mutant_edit[3];
-		$Alt=$mutant_edit[4];
-		$type=$mutant_edit[5];
+		$tmp_key = $cds_mut_pos[$i];
+		@mutant_edit = split "\t",$mutant_edit{$tmp_key};
+		$pos1 = $mutant_edit[1]-$tmp;		## cutted from postion
+		$pos2 = $mutant_edit[2];   			## cutted length
+		$Ref = $mutant_edit[3];
+		$Alt = $mutant_edit[4];
+		$type = $mutant_edit[5];
 		
 		if ($type=~/SNP/)
 		{
-			$pos2=$mutant_edit[2];
+			$pos2 = $mutant_edit[2];
+
+			
 		}
-		elsif(length($Ref)<2)
+		elsif(  $type=~/insertion/)
 		{
-			$pos2=$mutant_edit[2]-1;
+			if(length($Ref)<2)
+			{
+				$pos2=$mutant_edit[2]-1;
+			}
+			else
+			{
+				$tmp = $tmp - ( length($Ref)-length($Alt)+1 );
+			}
 		}
-		else
+		elsif( $type=~/deletion/ )
 		{
-			$tmp = $tmp + ( length($Ref)-length($Alt) );
+			if(length($Ref)<2)
+			{
+				$pos2 = $mutant_edit[2]-1;
+			}
+			else
+			{
+				$tmp = $tmp + ( length($Ref)-length($Alt)+1 );
+			}
 		}
-		
 		
 		$ref_of_alt= substr $fasta, $pos1, $pos2;
 		
-		if ($ref_of_alt == $Ref)
+		if ($ref_of_alt == $Ref )
 		{
-			$fragment1= substr $fasta, 0, ($pos1);
-			$fragment2= $Alt;
-			$fragment3= substr $fasta, ($pos1+$pos2), (length($fasta)-$pos1);
+			$fragment1 = substr $fasta, 0, ($pos1);
+			$fragment2 = $Alt;
+			$fragment3 = substr $fasta, ($pos1+$pos2), (length($fasta)-$pos1);
 			
 			$fasta=join "", $fragment1, $fragment2, $fragment3;
-			
-			if ($tmp_key=~/4972538/)
+			if ($tmp_key =~/4971308/)
 			{
-				print "$cds_mutation_pos{$locus}\n";
-				print "mutant_edit:\n@mutant_edit\n";
-				print length($fasta)."\n";
-				print "position: $pos1\n";
-				print "length:   $pos2\n";
-				print "fragment1 : fasta, 0, $pos1\n";
-				print "fragment2 : fasta, $pos1, $pos2 >> $ref_of_alt\n";
-				print "fragment3 : fasta, ".($pos1+$pos2).", ".(length($fasta)-$pos1)."\n";
+				
+				#print "gene length: ".length($fasta)."\n";
+				#print "position: $pos1\n";
+				#print "length:   $pos2\n";
+				#print "fragment1 : fasta, 0, $pos1\n";
+				#print "fragment2 : fasta, $pos1, $pos2 >> $ref_of_alt\n";
+				#print "fragment3 : fasta, ".($pos1+$pos2).", ".(length($fasta)-$pos1)."\n";
 			}
-			
-			print MutCDS "$tmp_key\t";
-			print MutCDS "$fragment1\n";
+			#print MutCDS "$tmp_key\t";
+			#print MutCDS "$fasta\n";
 		}
+
 	}
 	
 	$mut_cds_fasta = $fasta;

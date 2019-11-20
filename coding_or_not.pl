@@ -24,6 +24,8 @@ my $cds_name;
 my %coding;
 my %noncoding;
 my $header;
+my $chrmosome;
+my $mutation_pos;
 
 ##############################
 # 
@@ -36,6 +38,8 @@ while(<IN>)
 	chomp;
 	@tmp= split "\t",$_;
 	
+	$chrmosome=$tmp[0];
+
 	if ($tmp[1]==""){}
 	elsif($tmp[0]=~/^#/){}
 	elsif ($tmp[5]=~/non-coding region/)
@@ -46,8 +50,29 @@ while(<IN>)
 	}
 	else
 	{
-		$coding{"$tmp[0]\t$tmp[1]"}=$_;
+		if ($chrmosome eq $tmp[0] )
+		{
+			if ($tmp[2] eq "SNP" )
+			{
+				$mutation_pos=$tmp[1];
+				$coding{"$tmp[0]\t$tmp[1]"}=$_;
+			}
+			elsif( ( $tmp[1] - $mutation_pos ) < 10 )
+			{
+				#$coding{"$tmp[0]\t$tmp[1]"}=$_;
+			}
+			else
+			{
+				$mutation_pos=$tmp[1];
+				$coding{"$tmp[0]\t$tmp[1]"}=$_;
+			}
+		}
+		else
+		{
+			$mutation_pos=$tmp[1];
+		}
 	}
+
 	
 
 }
