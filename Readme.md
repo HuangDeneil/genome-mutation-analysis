@@ -1,23 +1,23 @@
 <h1>Genome mutation analysis</h1>
-<h1>Genome mutation analysis process after vcf file production step</h1>
-<h1>before vcf file production steps:</h1>
-1.Alignmnet (bwa)
-2.Alignment file convertion (optional) (samtools)
-3.Output vcf file (bcftools)
+<h3>Genome mutation analysis process after vcf file production step</h3>
+<h3>before vcf file production steps:</h3>
+<p>1.Alignmnet (bwa)</p>
+<p>2.Alignment file convertion (optional) (samtools)</p>
+<p>3.Output vcf file (bcftools)</p>
 
 
-<h1>After vcf file created:</h1>
-1. perl check_snp_position.pl sample.gff sample.vcf 
-2. perl merge_annotation.pl HOL1_variantion_all.txt uniprot_annotation_info.txt > cds_merged.txt
-3. perl coding_or_not.pl cds_merged.txt
-4. perl noncoding_analysis.pl sample.gff mutation_in_non-coding_region.txt
-5. perl check_aa_sequence.pl ATCC824_genome.fna codon_transfer.txt mutation_in_coding_region.txt 
-6. perl aa_forword_check.pl amino_acid_primary_check.txt mutation_cds.faa mutation_cds_modified.faa mutation_in_coding_region.txt
+<h4>After vcf file created:</h4>
+<p>1. perl check_snp_position.pl sample.gff sample.vcf </p>
+<p>2. perl merge_annotation.pl HOL1_variantion_all.txt uniprot_annotation_info.txt > cds_merged.txt </p>
+<p>3. perl coding_or_not.pl cds_merged.txt</p>
+<p>4. perl noncoding_analysis.pl sample.gff mutation_in_non-coding_region.txt </p>
+<p>5. perl check_aa_sequence.pl ATCC824_genome.fna codon_transfer.txt mutation_in_coding_region.txt </p>
+<p>6. perl aa_forword_check.pl amino_acid_primary_check.txt mutation_cds.faa mutation_cds_modified.faa mutation_in_coding_region.txt </p>
 
-<h1>more detail see Readme.sh</h1>
+<h2>more detail see Readme.sh</h2>
 
-<h1>Comparing 3 mutation strain mutation genes:</h1>
-7. perl cds_cross_check_v2.pl 0_S4_L001_final_report.txt 1_S5_L001_final_report.txt  2_S6_L001_final_report.txt
+<h3>Comparing 3 mutation strain mutation genes:</h3>
+<p>7. perl cds_cross_check_v2.pl 0_S4_L001_final_report.txt 1_S5_L001_final_report.txt  2_S6_L001_final_report.txt</br>
 
 
 
