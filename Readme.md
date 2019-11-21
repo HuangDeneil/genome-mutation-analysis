@@ -17,6 +17,11 @@ After vcf file created:
 5. perl check_aa_sequence.pl ATCC824_genome.fna codon_transfer.txt mutation_in_coding_region.txt 
 6. perl aa_forword_check.pl amino_acid_primary_check.txt mutation_cds.faa mutation_cds_modified.faa mutation_in_coding_region.txt
 
+more detail see Readme.sh
+
+Comparing 3 mutation strain mutation genes:
+7. perl cds_cross_check_v2.pl 0_S4_L001_final_report.txt 1_S5_L001_final_report.txt  2_S6_L001_final_report.txt
+
 
 
 
