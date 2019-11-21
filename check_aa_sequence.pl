@@ -272,7 +272,7 @@ foreach $locus (sort keys %cds_fasta)
 			}
 			else
 			{
-				$tmp = $tmp - ( length($Ref)-length($Alt)+1 );
+				$tmp = $tmp + ( length($Ref)-length($Alt) );
 			}
 		}
 		elsif( $type=~/deletion/ )
@@ -283,7 +283,7 @@ foreach $locus (sort keys %cds_fasta)
 			}
 			else
 			{
-				$tmp = $tmp + ( length($Ref)-length($Alt)+1 );
+				$tmp = $tmp - ( length($Ref)-length($Alt) );
 			}
 		}
 		
