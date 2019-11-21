@@ -1,13 +1,12 @@
-#Genome mutation analysis
-#Genome mutation analysis process after vcf file production step
-#before vcf file production steps:
-
+<h1>Genome mutation analysis</h1>
+<h1>Genome mutation analysis process after vcf file production step</h1>
+<h1>before vcf file production steps:</h1>
 1.Alignmnet (bwa)
 2.Alignment file convertion (optional) (samtools)
 3.Output vcf file (bcftools)
 
 
-#After vcf file created:
+<h1>After vcf file created:</h1>
 1. perl check_snp_position.pl sample.gff sample.vcf 
 2. perl merge_annotation.pl HOL1_variantion_all.txt uniprot_annotation_info.txt > cds_merged.txt
 3. perl coding_or_not.pl cds_merged.txt
@@ -17,7 +16,7 @@
 
 <h1>more detail see Readme.sh</h1>
 
-Comparing 3 mutation strain mutation genes:
+<h1>Comparing 3 mutation strain mutation genes:</h1>
 7. perl cds_cross_check_v2.pl 0_S4_L001_final_report.txt 1_S5_L001_final_report.txt  2_S6_L001_final_report.txt
 
 
