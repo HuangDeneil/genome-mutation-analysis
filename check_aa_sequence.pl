@@ -338,7 +338,7 @@ foreach $locus (sort keys %cds_fasta)
 	}
 	else
 	{
-		print Check "$locus\tanimo acid change\n";
+		print Check "$locus\tamino acid change\n";
 		
 		$file_name=$locus;
 		$file_name=~s/\t/_/g;

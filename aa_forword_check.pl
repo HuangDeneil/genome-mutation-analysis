@@ -55,9 +55,9 @@ while(<IN>)
 		$aa_change_info{$locus}="normal";
 		
 	}
-	elsif ($tmp[2]=~/animo acid change/)
+	elsif ($tmp[2]=~/amino acid change/)
 	{
-		$aa_change_info{$locus}="animo acid change";
+		$aa_change_info{$locus}="amino acid change";
 	}
 	
 }
@@ -185,7 +185,7 @@ close IN;
 
 foreach $locus (sort keys %list)
 {
-	if ($list{$locus} eq "animo acid change")
+	if ($list{$locus} eq "amino" acid change")
 	{
 		if ($aa_change_info{$locus} eq "normal" )
 		{}
@@ -195,7 +195,7 @@ foreach $locus (sort keys %list)
 		}
 		elsif ($transcript_dead{$locus} eq "dead")
 		{
-			$aa_change_info{$locus}="mutilple or lose stop codon";
+			$aa_change_info{$locus}="multiple or lose stop codon";
 		}
 		elsif ($pseudogenes{$locus} eq "sequence_relived" )
 		{
@@ -203,7 +203,7 @@ foreach $locus (sort keys %list)
 		}
 		else
 		{
-			$aa_change_info{$locus}="animo acid change but maybe work";
+			$aa_change_info{$locus}="amino acid change but maybe work";
 		}
 	}
 }
