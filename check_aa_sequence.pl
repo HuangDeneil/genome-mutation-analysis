@@ -190,7 +190,10 @@ open (Mutfaa, ">./Sequence_comparison/mutation_cds_modified.faa")||die "$!";
 open (Check, ">./Sequence_comparison/amino_acid_primary_check.txt")||die "$!";
 
 
-
+my %CDS;
+my %MutCDS;
+my %faa;
+my %Mutfaa;
 
 
 
@@ -216,9 +219,11 @@ foreach $locus (sort keys %cds_fasta)
 		}
 	}
 
-	$cds_fasta = $fasta;
-	if ( $fasta =~/^ATG/ || $fasta =~/^GTG/ || $fasta =~/^TTG/  || $fasta =~/^ATT/  || $fasta =~/^CTG/  )
-	{}  
+	
+	if ( $fasta =~ /^ATG/ || $fasta =~/^GTG/ || $fasta =~/^TTG/  || $fasta =~/^ATT/  || $fasta =~/^CTG/  )
+	{
+		$cds_fasta = $fasta;
+	}  
 	elsif ( $fasta =~/^TTA/ || $fasta=~/^CTA/ || $fasta =~/^TCA/ )
 	{
 		$cds_fasta = reverse $fasta;
@@ -226,6 +231,9 @@ foreach $locus (sort keys %cds_fasta)
 	}
 	print CDS ">$locus\n$cds_fasta\n";
 	close fna;
+	$CDS{$locus} = $cds_fasta;
+	
+	
 	
 	
 	if ( $tanslation{$locus} =~ /no/ ){}
@@ -236,9 +244,7 @@ foreach $locus (sort keys %cds_fasta)
 		$aa_seq =~ s/(...)/"$codon_abb{$1}" || "?"/eg;
 	}
 	print faa ">$locus\n$aa_seq\n";
-	
-
-	
+	$faa{$locus} = $aa_seq;
 	
 	
 	#################################
@@ -246,7 +252,8 @@ foreach $locus (sort keys %cds_fasta)
 	#  Mutation cds DNA sequence
 	# 
 	@cds_mut_pos=split "---", $cds_mutation_pos{$locus}; ## [chromosome]\t[position]
-	$fragment = $fasta;
+	$fragment = $CDS{$locus};
+
 	$tmp = 0;
 	for ( $i=1 ; $i < @cds_mut_pos ; $i++ )
 	{
@@ -291,21 +298,21 @@ foreach $locus (sort keys %cds_fasta)
 		
 		if ($ref_of_alt == $Ref )
 		{
-			$fragment1 = substr $fasta, 0, ($pos1);
+			$fragment1 = substr $fragment, 0, ($pos1);
 			$fragment2 = $Alt;
-			$fragment3 = substr $fasta, ($pos1+$pos2), (length($fasta)-$pos1);
+			$fragment3 = substr $fragment, ($pos1+$pos2), (length($fragment)-$pos1);
 			
 			$fasta=join "", $fragment1, $fragment2, $fragment3;
-			if ($tmp_key =~/4971308/)
-			{
+			# if ($tmp_key =~/6665320/)
+			# {
 				
-				#print "gene length: ".length($fasta)."\n";
-				#print "position: $pos1\n";
-				#print "length:   $pos2\n";
-				#print "fragment1 : fasta, 0, $pos1\n";
-				#print "fragment2 : fasta, $pos1, $pos2 >> $ref_of_alt\n";
-				#print "fragment3 : fasta, ".($pos1+$pos2).", ".(length($fasta)-$pos1)."\n";
-			}
+				# print "gene length: ".length($fasta)."\n";
+				# print "position: $pos1\n";
+				# print "length:   $pos2\n";
+				# print "fragment1 : fasta, 0, $pos1\n";
+				# print "fragment2 : fasta, $pos1, $pos2 >> $ref_of_alt\n";
+				# print "fragment3 : fasta, ".($pos1+$pos2).", ".(length($fasta)-$pos1)."\n";
+			# }
 			#print MutCDS "$tmp_key\t";
 			#print MutCDS "$fasta\n";
 		}
@@ -313,6 +320,7 @@ foreach $locus (sort keys %cds_fasta)
 	}
 	
 	$mut_cds_fasta = $fasta;
+	$MutCDS{$locus}=$mut_cds_fasta;
 	if ( $fasta=~/^ATG/ || $fasta=~/^GTG/ || $fasta=~/^TTG/  || $fasta=~/^ATT/  || $fasta=~/^CTG/  )
 	{}  
 	elsif ( $fasta=~/^TTA/ || $fasta=~/^CTA/ || $fasta=~/^TCA/ )
@@ -325,12 +333,39 @@ foreach $locus (sort keys %cds_fasta)
 	if ( $tanslation{$locus} =~ /no/ ){}
 	elsif ( $tanslation{$locus} =~ /yes/ )
 	{
-		$mut_aa_seq=$mut_cds_fasta;
+		$mut_aa_seq = $mut_cds_fasta;
 		$mut_aa_seq =~ s/(...)/"$codon_abb{$1}" || "?"/eg;
 	}
 	print Mutfaa ">$locus\n$mut_aa_seq\n";
+	$Mutfaa{$locus}=$mut_aa_seq;
+	# if ($tmp_key =~/8072245/)
+	# {
+		# print "gene length: ".length($fasta)."\n";
+		# print "position: $pos1\n";
+		# print "length:   $pos2\n";
+		# print "fragment1 : fasta, 0, $pos1\n";
+		# print "fragment2 : fasta, $pos1, $pos2 >> $ref_of_alt\n";
+		# print "fragment3 : fasta, ".($pos1+$pos2).", ".(length($fasta)-$pos1)."\n";
+		# print "$locus\n";
+		# print "$cds_fasta\n";
+		# print "$mut_cds_fasta\n";
+		# print  ">$locus\_ref\n$aa_seq\n";
+		# print  ">$locus\_alt\n$mut_aa_seq\n";
+	 # }
+	
+}
+
+foreach $locus(sort keys %Mutfaa)
+{
+	$cds_fasta = $CDS{$locus};
+	$aa_seq = $faa{$locus};
+	
+	$mut_cds_fasta = $MutCDS{$locus};
+	$mut_aa_seq = $Mutfaa{$locus};
 	
 	
+	$mut_aa_seq = $Mutfaa{$locus};
+	$aa_seq = $faa{$locus};
 	
 	if ( $mut_aa_seq eq $aa_seq )
 	{
@@ -351,14 +386,27 @@ foreach $locus (sort keys %cds_fasta)
 		
 		print protein ">$locus\_ref\n$aa_seq\n";
 		print protein ">$locus\_alt\n$mut_aa_seq\n";
+		#print  "$mut_aa_seq\n";
 		
 		close DNA;
 		close protein;
+		
+		
+		
 	}
-	
-	
-	
+	# if ($locus eq "SPRI_6987	8071483-8072280" )
+	# {
+		# print "$locus\n";
+		# print ">$locus\_ref\n$cds_fasta\n";
+		# print ">$locus\_alt\n$mut_cds_fasta\n";
+		# print  ">$locus\_ref\n$aa_seq\n";
+		# print  ">$locus\_alt\n$mut_aa_seq\n";
+	# }
 }
+
+
+
+
 
 close CDS;
 close faa;

@@ -185,7 +185,7 @@ close IN;
 
 foreach $locus (sort keys %list)
 {
-	if ($list{$locus} eq "amino" acid change")
+	if ($list{$locus} eq "amino acid change")
 	{
 		if ($aa_change_info{$locus} eq "normal" )
 		{}
