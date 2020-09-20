@@ -1,13 +1,22 @@
-<h1>Genome mutation analysis</h1>
-<h3>Genome mutation analysis process after vcf file production step</h3>
-<h3>before vcf file production steps:</h3>
-<p>1.Alignmnet (bwa)</p>
-<p>2.Alignment file convertion (optional) (samtools)</p>
-<p>3.Output vcf file (bcftools)</p>
+# Genome mutation analysis
+
+## This repo is doing mutation analysis
+---
+
+
+[![image](https://github.com/HuangDeneil/genome-mutation-analysis/blob/master/image/workflow.png)]
+
+
+### Genome mutation analysis process after vcf file production step
+
+### before vcf file production steps:
+##### 1.Alignmnet (bwa)
+##### 2.Alignment file convertion (optional) (samtools)
+##### 3.Output vcf file (bcftools)
 
 
 <h4>After vcf file created:</h4>
-<p>1. perl check_snp_position.pl sample.gff sample.vcf </p>
+<p>1. perl check_snp_position.pl sample.gff sample.vcf 
 <p>2. perl merge_annotation.pl HOL1_variantion_all.txt uniprot_annotation_info.txt > cds_merged.txt </p>
 <p>3. perl coding_or_not.pl cds_merged.txt</p>
 <p>4. perl noncoding_analysis.pl sample.gff mutation_in_non-coding_region.txt </p>
