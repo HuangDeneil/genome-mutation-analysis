@@ -167,7 +167,7 @@ while(<INcds>)
 				$locus = $1;
 			}
 			
-			push @cds_locus,$locus;
+			#push @cds_locus,$locus;
 			$locus_tag_chrmosome{$locus}=$chrmosome;
 			#print "$locus\n";
 			

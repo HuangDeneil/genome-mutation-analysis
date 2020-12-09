@@ -1,2 +1,17 @@
 Readme2.md
+*.vcf
+*.bcf
+*.bam
+*.sam
+*.fna
+*.gff
+reference_info/*
+Sequence_comparison/
+variantion_all.txt
+uniprot.txt
+cds_merged.txt
+mutation_in_non-coding_region.txt
+mutation_in_coding_region.txt
+
+
 

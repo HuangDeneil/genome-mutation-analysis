@@ -74,26 +74,30 @@ print "translation\t";
 print "ID\t";
 print "product name\t";
 print "product name(uniprot)\t";
+print "Gene name\t";
 print "KEGG (KO)\t";
 print "Gene ontology (biological process)\t";
 print "Gene ontology (cellular component)\t";
 print "Gene ontology (molecular function)\n";
 
+my $count;
 while(<IN>)
 {
 	chomp;
 	@tmp= split "\t",$_;
-	
-	print "$_\t";
+	$count=0;
+	#print "$_\t";
 	foreach $cds_name (sort keys %cds)
 	{
-		if($tmp[5]=~/$cds_name/)
+		if($tmp[5] eq "" || $tmp[8] eq "" ){}
+		elsif($tmp[5]=~/$cds_name/ || $cds_name=~/$tmp[8]/ )
 		{
-			print "$cds{$cds_name}";
-			
-			}
+			if($count <1)
+			{print "$_\t$cds{$cds_name}\n";}
+			$count++;
+		}
 	}
-	print "\n";
+	#print "\n";
 	
 }
 

@@ -12,14 +12,18 @@
 input_vcf_file="$1"
 
 
-refernce_gff="./script/HCCB10218.gff"
-reference_genome_fasta="./script/HCCB10218.fna"
-ref_genome="HCCB10218_reorganized.fna"
-codon_table="./script/codon_transfer.txt"
+refernce_gff="./reference_info/GCF_000008765.1_ASM876v1_genomic.gff"
+reference_genome_fasta="./reference_info/GCF_000008765.1_ASM876v1_genomic.fna"
+ref_genome="ATCC824.fna"
+codon_table="./codon_transfer.txt"
 
 uniprot="uniprot.txt"
 
-necessary_file="$input_vcf_file $refernce_gff $reference_genome_fasta $codon_table"
+necessary_file="\
+$input_vcf_file \
+$refernce_gff \
+$reference_genome_fasta \
+$codon_table"
 
 for i in $necessary_file
 do
@@ -30,7 +34,14 @@ do
 done
 
 script_folder_path="./script"
-code="check_snp_position.pl merge_annotation.pl coding_or_not.pl noncoding_analysis.pl fasta_reorganized.pl check_aa_sequence.pl aa_forword_check.pl "
+code="\
+check_snp_position.pl \
+merge_annotation.pl \
+coding_or_not.pl \
+noncoding_analysis.pl \
+fasta_reorganized.pl \
+check_aa_sequence.pl \
+aa_forword_check.pl"
 
 for i in $code
 do
@@ -79,9 +90,22 @@ if [ ! -f "$uniprot" ] ;then
 	echo "Trying to download uniprot annotation file first" 
 	echo "uniprot colomn need" 
 	echo "locus_id	Entry	Entry name	Status	Protein names	Cross-reference (KEGG)	Gene ontology (biological process)	Gene ontology (cellular component)	Gene ontology (molecular function)	Gene ontology (GO)" 
+# locus_id	
+# Entry	
+# Entry name	
+# Status	
+# Protein names	
+# Cross-reference (KEGG)	
+# Gene ontology (biological process)	
+# Gene ontology (cellular component)	
+# Gene ontology (molecular function)	
+# Gene ontology (GO)
+
 	exit 1
 	
 fi
+
+
 perl merge_annotation.pl variantion_all.txt $uniprot > cds_merged.txt
 
 
