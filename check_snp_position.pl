@@ -1,45 +1,81 @@
 #!/usr/bin/perl
 use strict;
-##############################################################
-# 
-# checking variation postition whather at protein coding regein
-# 
-# usage : perl check_snp_position.pl $ARGV[0] $ARGV[1] 
-# 
-# perl check_snp_position.pl GCF_000008765.1_ASM876v1_genomic.gff HOL_S10_L001.bwa.sorted.calls.filted_005.vcf 
-# 
-# 
-# 	$ARGV[0] >>> reference cds position file (***_cds_from_genomic.fna)
-# 	$ARGV[1] >>> input vcf file
-# 
-# 
-# edit time :
-# 20190823
-# 20190907
-# 20190908
-# 20190913
-# 
-# 
-# 
+use Getopt::Long;
+use File::Basename;
 
-#####################################################################
-# 
-# Print current time 
-# 
-# system'
-	# now=`date "+%Y-%m-%d_%H:%M:%S"`
-	# printf "%s\n" "$now"
-	# ';
+my $now;
+my $PROG = basename $0;
+my $exit_code;
+my ($input, $input1, $input2, $input3, $input4, $output, $output1, $output2, $output3, $output4);
+my ($ResultPath, $outpath);
+my ($gff, $vcf_file);
 
-if (!$ARGV[0]||!$ARGV[1]){
-	print "\nUsage error!!\n\n";
-	print "usage : perl check_snp_position.pl \$ARGV[0] \$ARGV[1] > \$ARGV[2]\n\n";
-	print "\$ARGV[0] >>> reference cds position file (GCF_000008765.1_ASM876v1_genomic.gff)\n";
-	print "\$ARGV[1] >>> input vcf file (HOL_S10_L001.bwa.sorted.calls.filted_005.vcf)\n";
-	print "\$ARGV[2] >>> output file name\n";
-	die"\n";
-	
+sub display_version {
+  print STDERR " 
+  ###############= VERSION =################
+    2021/08/10
+    $PROG v1.0.0 (beta version), 
+    hudeneil (hudeneil\@gmail.com)
+   ";
+  exit 0;
 }
+
+sub usage {
+    my $exit_code = @_ ? shift : 64;
+    print STDERR <<EOF;
+This program is checking variant position (annotation step):
+
+Usage: $PROG [options] 
+Options:
+Input/Output:
+  
+  -vcf STR        		  Input variant calling file (vcf) 
+  -gff STR         		  Reference genome gff
+  
+  --Result,-o  STR        output file [ default: variantion_all.txt ]
+  
+  --help,-h               Print this message
+  --version,-v            Print version information
+
+example:
+
+perl $PROG \
+-gff genome.gff \
+-vcf input.vcf \
+-o ./result/test_sample 
+
+EOF
+    exit $exit_code;
+}
+
+GetOptions(
+    "h" => \&display_help,
+    "v" => \&display_version,
+    "vcf=s" => \$vcf_file,
+    "gff=s" => \$gff,
+    "o=s" => \$ResultPath,
+    
+    "help" => \&display_help,
+    "version" => \&display_version,
+    "Result=s" => \$ResultPath,
+);
+# Check input exists
+if ( ! defined $ResultPath ) { $ResultPath = "variantion_all.txt";}
+if ( ! defined $vcf_file ) { print STDERR "\n !!!!! please input variant calling file (vcf) !!!!!! \n"; usage(0);}
+if ( ! defined $gff ) { print STDERR "\n !!!!! please input reference gff !!!!!! \n"; usage(0);}
+
+
+## Check input file exists
+if ( ! -f "$vcf_file" ) { print STDERR "\n\n!!!! $vcf_file : vcf file is not exists !!!!!\n\n";exit 1;}
+if ( ! -f "$gff" ) { print STDERR "\n\n!!!! $gff : gff file is not exists !!!!!\n\n";exit 1;}
+
+if ($ResultPath=~/(.+)\/$/) { $ResultPath = "$1";}
+
+`if [ ! -d "$ResultPath" ] ;then mkdir $ResultPath ; fi`;
+
+sub display_help { usage(0); }
+
+
 
 
 
@@ -47,7 +83,7 @@ if (!$ARGV[0]||!$ARGV[1]){
 # 
 # read vcf position
 # 
-open (INvcf,"$ARGV[1]")||die "$!";
+open (INvcf,"$vcf_file")||die "$!";
 
 my @tmp;
 my ($pos,$ref,$alt);
@@ -117,7 +153,7 @@ close INvcf;
 # 
 # genomic cds position
 # 
-open (INcds,"$ARGV[0]")||die "$!";
+open (INcds,"$gff")||die "$!";
 
 my %locus_tag;		# record cds position
 my $locus;
@@ -288,9 +324,18 @@ foreach $locus (sort keys %locus_tag)
 # 
 # 
 
-open (OUT,">variantion_all.txt")||die "$!";
+open (OUT,">$ResultPath")||die "$!";
 
-print OUT "Chomosome\tvariation position\tvariation type\tREF\tALT\tcds_locus_tag\tcds_start-end\ttranslation\tprotein_ID\tprotein_name\n";
+print OUT "Chomosome\t";
+print OUT "variation position\t";
+print OUT "variation type\t";
+print OUT "REF\t";
+print OUT "ALT\t";
+print OUT "cds_locus_tag\t";
+print OUT "cds_start-end\t";
+print OUT "translation\t";
+print OUT "protein_ID\t";
+print OUT "protein_name\n";
 
 
 my $noncoding=0;
@@ -312,6 +357,7 @@ close OUT;
 
 my @array=keys %vcf;
 my $array=@array;
+print "CDS variant report:\n";
 print "total variants : $array\n";
 print "SNP : $snp\n";
 print "insertion : $insertion\n";
